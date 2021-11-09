@@ -6,17 +6,6 @@ namespace MiniBlockchain
 {
     public record Block
     {
-        public Block(long index, string previousHash)
-        {
-            Index = index;
-            Hash = this.calculateHash();
-            TimeStamp = DateTime.UtcNow;
-            PreviousHash = previousHash;
-            Nonce = 0;
-        }
-
-        public long Index { get; }
-
         [JsonIgnore]
         public string Hash { get; set; }
 
@@ -33,10 +22,15 @@ namespace MiniBlockchain
         public DateTime TimeStamp { get; }
         public long Nonce { get; set; }
         public string PreviousHash { get; }
+        public List<Transaction> Transactions { get; }
 
-        public bool ShouldSerializeHash()
+        public Block(string previousHash, List<Transaction> pendingTransactions)
         {
-            return false;
+            Hash = this.calculateHash();
+            TimeStamp = DateTime.UtcNow;
+            PreviousHash = previousHash;
+            Nonce = 0;
+            Transactions = pendingTransactions;
         }
 
         /// <summary>
