@@ -33,7 +33,7 @@ app.MapGet("send_transaction/{from_address}/{to_address}/{amount}", async (conte
     }
 
     var transaction = new Transaction(fromAddress.ToString(), toAddress.ToString(), double.Parse(amount.ToString()));
-    blockchain.createTransaction(transaction);
+    blockchain.CreateTransaction(transaction);
 
     await context.Response.WriteAsync("Transaction pending confirmation");
 });
@@ -46,7 +46,7 @@ app.MapGet("check_balance/{address}", async (context) =>
         return;
     }
 
-    var balance = blockchain.getBalanceOfAddress(address.ToString());
+    var balance = blockchain.GetBalanceOfAddress(address.ToString());
 
     await context.Response.WriteAsync($"Your balance is: ${balance}");
 });
@@ -59,22 +59,22 @@ app.MapGet("/mine_block/{miner_address}", async (context) =>
         return;
     }
 
-    var previousBlock = blockchain.printLastBlock();
+    var previousBlock = blockchain.GetLastBlock();
 
     var previousHash = previousBlock.Hash;
-    var newBlock = blockchain.createBlockWithPendingTransactions(previousHash, minerAddress.ToString());
+    var newBlock = blockchain.CreateBlockWithPendingTransactions(previousHash, minerAddress.ToString());
 
     await context.Response.WriteAsJsonAsync(newBlock);
 });
 
 app.MapGet("/get_chain", () =>
 {
-    return blockchain.chain;
+    return blockchain.Chain;
 });
 
 app.MapGet("/validate", () =>
 {
-    var isValid = blockchain.isChainValid();
+    var isValid = blockchain.IsChainValid();
     
     if (isValid)
     {

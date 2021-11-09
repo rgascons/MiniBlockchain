@@ -9,55 +9,71 @@ namespace MiniBlockchain
         /// <summary>
         /// The blockchain.
         /// </summary>
-        public List<Block> chain { get; }
+        public List<Block> Chain { get; }
 
         /// <summary>
-        /// Current difficulty of proof of work
+        /// Current difficulty of proof of work.
         /// </summary>
-        private string difficulty;
+        private readonly string difficulty;
 
+        /// <summary>
+        /// List of pending (unverified) transactions.
+        /// </summary>
         private List<Transaction> pendingTransactions;
 
-        private long miningReward;
+        /// <summary>
+        /// Mining reward when a block is mined.
+        /// </summary>
+        private readonly long miningReward;
 
         /// <summary>
         /// Initializes a blockchain with one block.
         /// </summary>
         public Blockchain()
         {
-            chain = new List<Block>();
+            Chain = new List<Block>()
+            {
+                // Genesis block
+                new Block("0", new List<Transaction>())
+            };
             difficulty = "000";
             pendingTransactions = new List<Transaction>();
             miningReward = 10;
-
-            // Genesis block
-            createBlockWithPendingTransactions("0", "genesis");
         }
 
         /// <summary>
         /// Create a new block and add it to the blockchain.
         /// </summary>
-        /// <param name="previousHash">The previous' block hash.</param>
-        /// <returns>Newly created block</returns>
-        public Block createBlockWithPendingTransactions(string previousHash, string minnerAddress)
+        /// <param name="previousHash">The previous block hash.</param>
+        /// <returns>Newly created block.</returns>
+        public Block CreateBlockWithPendingTransactions(string previousHash, string minnerAddress)
         {
             var block = new Block(previousHash, pendingTransactions);
-            block.mineBlock(difficulty);
-            chain.Add(block);
+            block.MineBlock(difficulty);
+            Chain.Add(block);
             pendingTransactions = new List<Transaction>(){ new Transaction(null, minnerAddress, miningReward) };
             return block;
         }
 
-        public void createTransaction(Transaction transaction)
+        /// <summary>
+        /// Adds a transaction to the list of pending transactions.
+        /// </summary>
+        /// <param name="transaction">The transaction.</param>
+        public void CreateTransaction(Transaction transaction)
         {
             pendingTransactions.Add(transaction);
         }
 
-        public double getBalanceOfAddress(string address)
+        /// <summary>
+        /// Gets the balance of a given address
+        /// </summary>
+        /// <param name="address">The address.</param>
+        /// <returns>The balance.</returns>
+        public double GetBalanceOfAddress(string address)
         {
             double balance = 0;
 
-            chain.ForEach((block) =>
+            Chain.ForEach((block) =>
             {
                 block.Transactions.ForEach((transaction) =>
                 {
@@ -79,28 +95,28 @@ namespace MiniBlockchain
         /// Print the last block of the blockchain.
         /// </summary>
         /// <returns>Block</returns>
-        public Block printLastBlock()
+        public Block GetLastBlock()
         {
-            return chain[chain.Count - 1];
+            return Chain[Chain.Count - 1];
         }
 
         /// <summary>
-        /// Validates the chain
+        /// Validates the chain.
         /// </summary>
         /// <returns>boolean</returns>
-        public bool isChainValid()
+        public bool IsChainValid()
         {
-            var previousBlock = this.chain[0];
+            var previousBlock = this.Chain[0];
             var blockIndex = 1;
-            while (blockIndex < this.chain.Count)
+            while (blockIndex < this.Chain.Count)
             {
-                var block = this.chain[blockIndex];
+                var block = this.Chain[blockIndex];
                 if (block.PreviousHash != previousBlock.Hash)
                 {
                     return false;
                 }
 
-                var calculatedHash = block.calculateHash();
+                var calculatedHash = block.CalculateHash();
                 if (block.Hash != calculatedHash)
                 {
                     return false;

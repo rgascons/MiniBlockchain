@@ -24,9 +24,14 @@ namespace MiniBlockchain
         public string PreviousHash { get; }
         public List<Transaction> Transactions { get; }
 
+        /// <summary>
+        /// Initialized a block.
+        /// </summary>
+        /// <param name="previousHash">The previous block hash.</param>
+        /// <param name="pendingTransactions">List of pending transactions.</param>
         public Block(string previousHash, List<Transaction> pendingTransactions)
         {
-            Hash = this.calculateHash();
+            Hash = this.CalculateHash();
             TimeStamp = DateTime.UtcNow;
             PreviousHash = previousHash;
             Nonce = 0;
@@ -38,7 +43,7 @@ namespace MiniBlockchain
         /// </summary>
         /// <param name="block">The block.</param>
         /// <returns>A hash of the block.</returns>
-        public string calculateHash()
+        public string CalculateHash()
         {
             using (SHA256 hash = SHA256.Create())
             {
@@ -48,12 +53,16 @@ namespace MiniBlockchain
             }
         }
 
-        public void mineBlock(string difficulty)
+        /// <summary>
+        /// Mines a block.
+        /// </summary>
+        /// <param name="difficulty">The mining difficulty.</param>
+        public void MineBlock(string difficulty)
         {
             while(!this.Hash.StartsWith(difficulty))
             {
                 this.Nonce++;
-                this.Hash = calculateHash();
+                this.Hash = CalculateHash();
             }
         }
     }
