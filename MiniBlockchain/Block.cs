@@ -41,7 +41,6 @@ namespace MiniBlockchain
         /// <summary>
         /// Re-calculates the hash of a block.
         /// </summary>
-        /// <param name="block">The block.</param>
         /// <returns>A hash of the block.</returns>
         public string CalculateHash()
         {
@@ -65,5 +64,7 @@ namespace MiniBlockchain
                 this.Hash = CalculateHash();
             }
         }
+
+        public bool AreTransactionsValid() => Transactions.All((t) => t.Validate());
     }
 }

@@ -1,3 +1,4 @@
+using System.Net;
 using MiniBlockchain;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,33 +13,42 @@ app.UseHttpsRedirection();
 
 var blockchain = new Blockchain();
 
-app.MapGet("send_transaction/{from_address}/{to_address}/{amount}", async (context) =>
+app.MapPost("/send_transaction", async (context) =>
 {
-    if (!context.Request.RouteValues.TryGetValue("from_address", out var fromAddress))
+    if (!context.Request.HasJsonContentType())
     {
-        context.Response.StatusCode = 400;
+        context.Response.StatusCode = (int) HttpStatusCode.UnsupportedMediaType;
         return;
     }
 
-    if (!context.Request.RouteValues.TryGetValue("to_address", out var toAddress))
+    var transaction = await context.Request.ReadFromJsonAsync<Transaction>();
+
+    // This is for dev purposes only. Get the public-private key pair by calling /create_wallet
+    //var publicKey = "public-key";
+    //var privateKey = "private-key";
+    //Wallet wallet = new Wallet(privateKey, publicKey);
+    //transaction.SignTransaction(wallet);
+
+    if (transaction != null)
     {
-        context.Response.StatusCode = 400;
-        return;
+        blockchain.AddTransaction(transaction);
+        await context.Response.WriteAsync("Transaction pending confirmation");
     }
 
-    if (!context.Request.RouteValues.TryGetValue("amount", out var amount))
-    {
-        context.Response.StatusCode = 400;
-        return;
-    }
-
-    var transaction = new Transaction(fromAddress.ToString(), toAddress.ToString(), double.Parse(amount.ToString()));
-    blockchain.CreateTransaction(transaction);
-
-    await context.Response.WriteAsync("Transaction pending confirmation");
+    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 });
 
-app.MapGet("check_balance/{address}", async (context) =>
+app.MapPost("/sign_transaction", async (context) =>
+{
+    if (!context.Request.HasJsonContentType())
+    {
+        context.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
+        return;
+    }
+
+});
+
+app.MapGet("/check_balance/{address}", async (context) =>
 {
     if (!context.Request.RouteValues.TryGetValue("address", out var address))
     {
@@ -84,6 +94,14 @@ app.MapGet("/validate", () =>
     {
         return "The blockchain is NOT valid.";
     }
+});
+
+// Wallet "client"
+app.MapGet("/create_wallet", () =>
+{
+    var keyPair = new Wallet();
+
+    return keyPair;
 });
 
 app.Run();

@@ -59,8 +59,17 @@ namespace MiniBlockchain
         /// Adds a transaction to the list of pending transactions.
         /// </summary>
         /// <param name="transaction">The transaction.</param>
-        public void CreateTransaction(Transaction transaction)
+        public void AddTransaction(Transaction transaction)
         {
+            if (transaction.FromAddress == null || transaction.ToAddress == null)
+            {
+                throw new Exception("Transaction needs a sender and receiver address.");
+            }
+
+            if (!transaction.Validate())
+            {
+                throw new Exception("Transaction is not properly signed");
+            }
             pendingTransactions.Add(transaction);
         }
 
@@ -112,6 +121,11 @@ namespace MiniBlockchain
             {
                 var block = this.Chain[blockIndex];
                 if (block.PreviousHash != previousBlock.Hash)
+                {
+                    return false;
+                }
+
+                if (!block.AreTransactionsValid())
                 {
                     return false;
                 }
