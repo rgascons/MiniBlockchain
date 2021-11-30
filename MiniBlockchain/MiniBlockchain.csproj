@@ -15,5 +15,9 @@
   <ItemGroup>
     <None Remove="Secp256k1.Net" />
     <None Remove="Secp256k1.Native" />
+    <None Remove="core\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="core\" />
   </ItemGroup>
 </Project>

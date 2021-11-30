@@ -19,7 +19,7 @@ namespace MiniBlockchain
         /// <summary>
         /// List of pending (unverified) transactions.
         /// </summary>
-        private List<Transaction> pendingTransactions;
+        private TransactionPool txPool;
 
         /// <summary>
         /// Mining reward when a block is mined.
@@ -37,7 +37,7 @@ namespace MiniBlockchain
                 new Block("0", new List<Transaction>())
             };
             difficulty = "000";
-            pendingTransactions = new List<Transaction>();
+            txPool = new TransactionPool();
             miningReward = 10;
         }
 
@@ -48,10 +48,10 @@ namespace MiniBlockchain
         /// <returns>Newly created block.</returns>
         public Block CreateBlockWithPendingTransactions(string previousHash, string minnerAddress)
         {
-            var block = new Block(previousHash, pendingTransactions);
+            var block = new Block(previousHash, txPool.PendingTransactions);
             block.MineBlock(difficulty);
             Chain.Add(block);
-            pendingTransactions = new List<Transaction>(){ new Transaction(null, minnerAddress, miningReward) };
+            txPool.ClearPendingTransactions(new Transaction(null, minnerAddress, miningReward));
             return block;
         }
 
@@ -61,16 +61,7 @@ namespace MiniBlockchain
         /// <param name="transaction">The transaction.</param>
         public void AddTransaction(Transaction transaction)
         {
-            if (transaction.FromAddress == null || transaction.ToAddress == null)
-            {
-                throw new Exception("Transaction needs a sender and receiver address.");
-            }
-
-            if (!transaction.Validate())
-            {
-                throw new Exception("Transaction is not properly signed");
-            }
-            pendingTransactions.Add(transaction);
+            txPool.AddTransaction(transaction);
         }
 
         /// <summary>
@@ -84,7 +75,7 @@ namespace MiniBlockchain
 
             Chain.ForEach((block) =>
             {
-                block.Transactions.ForEach((transaction) =>
+                foreach(var transaction in block.Transactions)
                 {
                     if (transaction.FromAddress == address)
                     {
@@ -94,7 +85,7 @@ namespace MiniBlockchain
                     {
                         balance += transaction.Amount;
                     }
-                });
+                }
             });
 
             return balance;

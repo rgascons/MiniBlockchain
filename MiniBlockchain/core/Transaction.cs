@@ -12,7 +12,7 @@ namespace MiniBlockchain
         public string ToAddress { get; set;  }
         public double Amount { get; set; }
         [JsonIgnore]
-        public string? Signature { get; internal set; }
+        public string? Signature { get; private set; }
 
         public Transaction() { }
 
