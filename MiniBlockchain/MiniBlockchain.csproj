@@ -16,8 +16,12 @@
     <None Remove="Secp256k1.Net" />
     <None Remove="Secp256k1.Native" />
     <None Remove="core\" />
+    <None Remove="p2p\" />
+    <None Remove="actions\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="core\" />
+    <Folder Include="socket\" />
+    <Folder Include="actions\" />
   </ItemGroup>
 </Project>

@@ -6,6 +6,7 @@ namespace MiniBlockchain
 {
     public class Blockchain
     {
+
         /// <summary>
         /// The blockchain.
         /// </summary>
@@ -26,10 +27,12 @@ namespace MiniBlockchain
         /// </summary>
         private readonly long miningReward;
 
+        private static Blockchain BlockchainInstance { get; set; }
+
         /// <summary>
         /// Initializes a blockchain with one block.
         /// </summary>
-        public Blockchain()
+        private Blockchain()
         {
             Chain = new List<Block>()
             {
@@ -39,6 +42,15 @@ namespace MiniBlockchain
             difficulty = "000";
             txPool = new TransactionPool();
             miningReward = 10;
+        }
+
+        public static Blockchain GetBlockchain()
+        {
+            if (BlockchainInstance == null)
+            {
+                BlockchainInstance = new Blockchain();
+            }
+            return BlockchainInstance;
         }
 
         /// <summary>

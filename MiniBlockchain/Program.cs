@@ -1,5 +1,17 @@
 using System.Net;
 using MiniBlockchain;
+using MiniBlockchain.core;
+using MiniBlockchain.socket;
+
+var blockchain = Blockchain.GetBlockchain();
+
+new Thread(() =>
+{
+    Thread.CurrentThread.IsBackground = true;
+    var actionsController = new ActionsController();
+    var server = new Server(actionsController);
+    server.Start();
+}).Start();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +22,6 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
-
-var blockchain = new Blockchain();
 
 app.MapPost("/send_transaction", async (context) =>
 {
@@ -36,16 +46,6 @@ app.MapPost("/send_transaction", async (context) =>
     }
 
     context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-});
-
-app.MapPost("/sign_transaction", async (context) =>
-{
-    if (!context.Request.HasJsonContentType())
-    {
-        context.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
-        return;
-    }
-
 });
 
 app.MapGet("/check_balance/{address}", async (context) =>
@@ -75,25 +75,6 @@ app.MapGet("/mine_block/{miner_address}", async (context) =>
     var newBlock = blockchain.CreateBlockWithPendingTransactions(previousHash, minerAddress.ToString());
 
     await context.Response.WriteAsJsonAsync(newBlock);
-});
-
-app.MapGet("/get_chain", () =>
-{
-    return blockchain.Chain;
-});
-
-app.MapGet("/validate", () =>
-{
-    var isValid = blockchain.IsChainValid();
-    
-    if (isValid)
-    {
-        return "The blockchain is valid.";
-    }
-    else
-    {
-        return "The blockchain is NOT valid.";
-    }
 });
 
 // Wallet "client"
