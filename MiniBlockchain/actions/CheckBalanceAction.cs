@@ -1,18 +1,18 @@
 ﻿using System;
-using System.Text.Json;
-
 namespace MiniBlockchain.actions
 {
-    public class GetChainAction : IAction
+    public class CheckBalanceAction : IAction
     {
-        public GetChainAction()
+        public CheckBalanceAction()
         {
         }
 
         public string Run(string? payload)
         {
             var blockchain = Blockchain.GetBlockchain();
-            return JsonSerializer.Serialize(blockchain.Chain);
+            var balance = blockchain.GetBalanceOfAddress(payload);
+
+            return $"Your balance is: ${balance}";
         }
     }
 }

@@ -1,11 +1,14 @@
 ﻿using System;
-namespace ClientSocket
+namespace WalletClient
 {
     using System;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
     using System.Text;
+    using Shared;
+    using ProtoBuf;
+    using Shared.models;
 
     // State object for receiving data from remote device.  
     public class StateObject
@@ -20,7 +23,7 @@ namespace ClientSocket
         public StringBuilder sb = new StringBuilder();
     }
 
-    public class Client
+    public class SocketClient
     {
         // The port number for the remote device.  
         private const int port = 11000;
@@ -32,65 +35,66 @@ namespace ClientSocket
             new ManualResetEvent(false);
         private static ManualResetEvent receiveDone =
             new ManualResetEvent(false);
+        private Socket client;
 
-        // The response from the remote device.  
-        private static String response = String.Empty;
+        private string Host { get; }
 
-        public void Start()
+        private Action<string> Callback { get;  }
+
+        public SocketClient(string host, Action<string> callback)
         {
-            // Connect to a remote device.  
+            Host = host;
+            Callback = callback;
+        }
+
+        public void Start(string instruction, string payload = "")
+        {
+            // Establish the remote endpoint for the socket.  
+            IPHostEntry ipHostInfo = Dns.GetHostEntry(Host);
+            IPAddress ipAddress = ipHostInfo.AddressList[0];
+            IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
+
+            // Create a TCP/IP socket.  
+            client = new Socket(ipAddress.AddressFamily,
+                SocketType.Stream, ProtocolType.Tcp);
+
+            // Connect to the remote endpoint.  
+            client.BeginConnect(remoteEP,
+                new AsyncCallback(ConnectCallback), client);
+            connectDone.WaitOne();
+
             try
             {
-                // Establish the remote endpoint for the socket.  
-                // The name of the
-                // remote device is "host.contoso.com".  
-                IPHostEntry ipHostInfo = Dns.GetHostEntry("Ricards-MacBook-Pro.local");
-                IPAddress ipAddress = ipHostInfo.AddressList[0];
-                IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
-
-                // Create a TCP/IP socket.  
-                Socket client = new Socket(ipAddress.AddressFamily,
-                    SocketType.Stream, ProtocolType.Tcp);
-
-                // Connect to the remote endpoint.  
-                client.BeginConnect(remoteEP,
-                    new AsyncCallback(ConnectCallback), client);
-                connectDone.WaitOne();
-
-                // Send test data to the remote device.  
-                Send(client, "get_chain<EOF>");
+                // Send data to the node.
+                Send(client, $"{instruction};{payload};<EOF>");
                 sendDone.WaitOne();
 
                 // Receive the response from the remote device.  
                 Receive(client);
                 receiveDone.WaitOne();
-
-                // Write the response to the console.  
-                Console.WriteLine("Response received : {0}", response);
-
-                // Release the socket.  
-                client.Shutdown(SocketShutdown.Both);
-                client.Close();
-
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
+                Callback(e.ToString());
             }
         }
 
-        private static void ConnectCallback(IAsyncResult ar)
+        public void DisposeClient()
+        {
+            // Release the socket.  
+            client.Shutdown(SocketShutdown.Both);
+            client.Close();
+        }
+
+        private void ConnectCallback(IAsyncResult ar)
         {
             try
             {
                 // Retrieve the socket from the state object.  
                 Socket client = (Socket)ar.AsyncState;
 
-                // Complete the connection.  
+                // Complete the connection.
                 client.EndConnect(ar);
-
-                Console.WriteLine("Socket connected to {0}",
-                    client.RemoteEndPoint.ToString());
 
                 // Signal that the connection has been made.  
                 connectDone.Set();
@@ -101,7 +105,7 @@ namespace ClientSocket
             }
         }
 
-        private static void Receive(Socket client)
+        private void Receive(Socket client)
         {
             try
             {
@@ -119,7 +123,7 @@ namespace ClientSocket
             }
         }
 
-        private static void ReceiveCallback(IAsyncResult ar)
+        private void ReceiveCallback(IAsyncResult ar)
         {
             try
             {
@@ -145,7 +149,7 @@ namespace ClientSocket
                     // All the data has arrived; put it in response.  
                     if (state.sb.Length > 1)
                     {
-                        response = state.sb.ToString();
+                        Callback(state.sb.ToString());
                     }
                     // Signal that all bytes have been received.  
                     receiveDone.Set();
@@ -157,7 +161,7 @@ namespace ClientSocket
             }
         }
 
-        private static void Send(Socket client, String data)
+        private void Send(Socket client, String data)
         {
             // Convert the string data to byte data using ASCII encoding.  
             byte[] byteData = Encoding.ASCII.GetBytes(data);
@@ -167,7 +171,7 @@ namespace ClientSocket
                 new AsyncCallback(SendCallback), client);
         }
 
-        private static void SendCallback(IAsyncResult ar)
+        private void SendCallback(IAsyncResult ar)
         {
             try
             {
@@ -176,7 +180,6 @@ namespace ClientSocket
 
                 // Complete sending the data to the remote device.  
                 int bytesSent = client.EndSend(ar);
-                Console.WriteLine("Sent {0} bytes to server.", bytesSent);
 
                 // Signal that all bytes have been sent.  
                 sendDone.Set();

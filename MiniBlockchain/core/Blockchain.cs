@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Shared.models;
 
 namespace MiniBlockchain
 {
@@ -63,7 +64,8 @@ namespace MiniBlockchain
             var block = new Block(previousHash, txPool.PendingTransactions);
             block.MineBlock(difficulty);
             Chain.Add(block);
-            txPool.ClearPendingTransactions(new Transaction(null, minnerAddress, miningReward));
+            var transaction = new Transaction { FromAddress = null, ToAddress = minnerAddress, Amount = miningReward };
+            txPool.ClearPendingTransactions(transaction);
             return block;
         }
 

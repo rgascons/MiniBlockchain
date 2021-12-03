@@ -124,7 +124,9 @@ namespace MiniBlockchain.socket
                         content.Length, content);
 
                     // Use callback with the data
-                    var result = ActionsController.RunAction(content.Split("<EOF>").First());
+                    // instruction_id;payload;<EOF>
+                    var message = content.Split(";");
+                    var result = ActionsController.RunAction(message[0], message[1]);
 
                     // Send the result back to the client.  
                     Send(handler, result);
@@ -159,6 +161,7 @@ namespace MiniBlockchain.socket
                 int bytesSent = handler.EndSend(ar);
                 Console.WriteLine("Sent {0} bytes to client.", bytesSent);
 
+                // Do we want to keep the connecton alive?
                 handler.Shutdown(SocketShutdown.Both);
                 handler.Close();
 

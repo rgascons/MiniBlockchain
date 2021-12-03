@@ -10,6 +10,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Secp256k1.Net" Version="0.1.55" />
     <PackageReference Include="Secp256k1.Native" Version="0.1.20" />
+    <PackageReference Include="protobuf-net" Version="3.0.101" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,10 +19,16 @@
     <None Remove="core\" />
     <None Remove="p2p\" />
     <None Remove="actions\" />
+    <None Remove="protobuf-net" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="core\" />
     <Folder Include="socket\" />
     <Folder Include="actions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shared\Shared.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 </Project>

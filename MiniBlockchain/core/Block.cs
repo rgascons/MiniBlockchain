@@ -1,4 +1,7 @@
 ﻿using Newtonsoft.Json;
+using Secp256k1Net;
+using Shared;
+using Shared.models;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -69,6 +72,6 @@ namespace MiniBlockchain
         /// Validates all transactions.
         /// </summary>
         /// <returns>A boolean indicating if transactions are valid or not.</returns>
-        public bool AreTransactionsValid() => Transactions.All((t) => t.Validate());
+        public bool AreTransactionsValid() => Transactions.All((t) => Utils.ValidateTransaction(t));
     }
 }

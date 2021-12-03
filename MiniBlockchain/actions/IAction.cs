@@ -3,7 +3,7 @@ namespace MiniBlockchain.actions
 {
     public interface IAction
     {
-        string Run();
+        string Run(string? payload);
     }
 }
 

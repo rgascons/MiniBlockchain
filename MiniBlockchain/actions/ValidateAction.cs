@@ -7,7 +7,7 @@ namespace MiniBlockchain.actions
         {
         }
 
-        public string Run()
+        public string Run(string? payload)
         {
             var blockchain = Blockchain.GetBlockchain();
             var isValid = blockchain.IsChainValid();

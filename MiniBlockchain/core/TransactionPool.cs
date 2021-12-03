@@ -1,4 +1,7 @@
 ﻿using System;
+using Shared;
+using Shared.models;
+
 namespace MiniBlockchain
 {
     public class TransactionPool
@@ -24,11 +27,11 @@ namespace MiniBlockchain
                 throw new Exception("Transaction needs a sender and receiver address.");
             }
 
-            if (!transaction.Validate())
+            if (!Utils.ValidateTransaction(transaction))
             {
                 throw new Exception("Transaction is not properly signed");
             }
-            PendingTransactions.Add(transaction);
+            _pendingTransactions.Add(transaction);
         }
 
         public void ClearPendingTransactions(Transaction initialTx)

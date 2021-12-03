@@ -12,12 +12,13 @@ namespace MiniBlockchain.core
 
             map.Add("get_chain", new GetChainAction());
             map.Add("validate", new ValidateAction());
+            map.Add("send_transaction", new SendTransactionAction());
         }
 
-        public string RunAction(string action)
+        public string RunAction(string action, string payload = null)
         {
             Console.WriteLine("Running {0}", action);
-            return map[action].Run();
+            return map[action].Run(payload);
         }
     }
 }

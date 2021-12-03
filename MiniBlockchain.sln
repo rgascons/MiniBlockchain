@@ -5,7 +5,9 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniBlockchain", "MiniBlockchain\MiniBlockchain.csproj", "{C8C4BB53-BB6A-40A6-A3A3-0193D2282545}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientSocket", "ClientSocket\ClientSocket.csproj", "{9FCEFF5F-8D80-4DD0-8AAE-731F007D662F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wallet", "ClientSocket\Wallet.csproj", "{9FCEFF5F-8D80-4DD0-8AAE-731F007D662F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{007C053F-17B3-4FEB-B41A-14990FE97843}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{9FCEFF5F-8D80-4DD0-8AAE-731F007D662F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9FCEFF5F-8D80-4DD0-8AAE-731F007D662F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9FCEFF5F-8D80-4DD0-8AAE-731F007D662F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{007C053F-17B3-4FEB-B41A-14990FE97843}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{007C053F-17B3-4FEB-B41A-14990FE97843}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{007C053F-17B3-4FEB-B41A-14990FE97843}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{007C053F-17B3-4FEB-B41A-14990FE97843}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using Secp256k1Net;
 
-namespace MiniBlockchain
+namespace WalletClient
 {
     public class Wallet
     {
