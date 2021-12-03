@@ -20,11 +20,12 @@ Console.WriteLine("1. Display blockchain");
 Console.WriteLine("2. Send a transaction");
 Console.WriteLine("3. Create wallet");
 Console.WriteLine("4. Validate blockchain");
-Console.WriteLine("5. Exit");
+Console.WriteLine("5. Check wallet's balance");
+Console.WriteLine("6. Exit");
 Console.WriteLine("--------------------------------" + Environment.NewLine);
 Console.WriteLine("Please choose an operation....");
 
-while (option != 5)
+while (option != 6)
 {
     switch (option)
     {
@@ -53,6 +54,9 @@ while (option != 5)
             break;
         case 4:
             client.Start("validate");
+            break;
+        case 5:
+            client.Start("check_balance", wallet.PublicKey);
             break;
     }
     var input = Console.ReadLine();

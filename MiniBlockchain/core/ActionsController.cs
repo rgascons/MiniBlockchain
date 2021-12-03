@@ -13,6 +13,7 @@ namespace MiniBlockchain.core
             map.Add("get_chain", new GetChainAction());
             map.Add("validate", new ValidateAction());
             map.Add("send_transaction", new SendTransactionAction());
+            map.Add("check_balance", new CheckBalanceAction());
         }
 
         public string RunAction(string action, string payload = null)
